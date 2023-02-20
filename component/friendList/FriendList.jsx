@@ -1,10 +1,14 @@
 import { FlatList, Image, Text, View } from 'react-native'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+
 
 const FriendList = () => {
-  const [username,setUsername] = useState('qweqwe');
-  const [onlineUsers] = useState([]);
+  const [username,setUsername] = useState('');
+  
+  const usersOnline = useSelector(state => state.usersOnline);
 
+  console.log(usersOnline);
   
   return (
     <View style={{flex:1, justifyContent:'flex-start',alignItems:'center'
@@ -14,9 +18,9 @@ const FriendList = () => {
       </View>
 
       <FlatList
-      data={onlineUsers}
+      data={usersOnline}
       keyExtractor={(item) => item.userId}
-      extraData={onlineUsers}
+      extraData={usersOnline}
       ItemSeparatorComponent={() => <View style={{height:24}} />}
       renderItem={({item}) => (
       <View style={{flex:1,flexDirection:'row',justifyContent:'space-between',alignItems:'center',backgroundColor:'#fff',paddingHorizontal:24,borderRadius:16,paddingVertical:8}}>

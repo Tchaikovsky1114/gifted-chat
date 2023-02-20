@@ -1,8 +1,5 @@
-const express = require('express');
-const app = express();
 const port = 4001
-const server = app.listen(port);
-const io = require('socket.io')(server);
+const io = require('socket.io')();
 const messageHandler = require('./handlers/message.handler')
 
 const users = {};
@@ -22,21 +19,31 @@ function createUserOnline() {
 io.on('connection', (socket) => {
   
   users[socket.id] = { userId: Math.random().toString(16) };
+
   socket.on('join', username => {
     users[socket.id].username = username;
     users[socket.id].avatar = createUserAvatarUrl();
-    
     messageHandler.handleMessage(socket,users);
-    io.emit('users_online',{data: createUserOnline()});
-    
-    socket.on('disconnect', () => {
-      delete users[socket.id];
-      io.emit('users_online',{data: createUserOnline()});
-    })
+  });
 
-  })
+  socket.on("disconnect", () => {
+    delete users[socket.id];
+    io.emit("action", { type: "users_online", data: createUserOnline() })
+  });
   
+  socket.on("action", action => {
+    switch(action.type) {
+      case "server/hello":
+        socket.emit('action', { type: "message", data: "Good day!" });
+        break;
+      case "server/join":
+        users[socket.id].username = action.data;
+        users[socket.id].avatar = createUserAvatarUrl();
+        socket.emit("action", { type: 'users_online', data: createUserOnline() })
+        break;
+    }
+  })
 })
 
 
-io.listen(server);
+io.listen(port);

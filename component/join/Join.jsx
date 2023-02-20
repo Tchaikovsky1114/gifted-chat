@@ -1,26 +1,29 @@
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { FontAwesome5 } from '@expo/vector-icons';
-
-
-
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 
 const Join = () => {
+  const disaptch = useDispatch();
   const [username,setUsername] = useState();  
   const navigation = useNavigation();
-
+  
   const joinChat = (username) => {
-    socket.emit('join', username);
+    if(!username) return;
+    // socket.emit('join', username);
+    disaptch({ type: 'server/join', data: username})
     navigation.navigate('FriendList');
-    setHasJoined(true);  
+    // setHasJoined(true);  
   }
   
   return (
     <View style={{flex:1, alignItems:'center', justifyContent:'space-around'}}>
       <View style={{justifyContent:'center',alignItems:'center'}}>
         <Text style={{fontWeight:'bold',fontSize:32,padding:8}}>Rocket Chat</Text>
+      <View style={{width:260}}>
       <FontAwesome5 name="rocketchat" size={220} color="#2d63e2" />
+      </View>
       </View>
       <TextInput value={username} onChangeText={(text) => setUsername(text)} style={{backgroundColor:'#fff',paddingHorizontal:16,paddingVertical:2,marginTop:8,fontSize:30,borderRadius:8}} placeholder='Enter your name' />
       <View style={{marginTop:8,paddingBottom:Platform.OS === 'ios' ? 70 : 0}}>
